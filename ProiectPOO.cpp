@@ -571,6 +571,100 @@ void comparareSalariu (Angajat ang1, Angajat ang2) {
     cout << ang2.nume << ": " << ang2.salariu << " lei" << endl;
 }
 
+class Premiu {
+private:
+    Film filmCastigator;
+    string nume;
+    float valoare;
+    int anAcordare;
+
+public:
+    Film getFilmCastigator() {
+        return this->filmCastigator; }
+        
+    string getNume() {
+        return this->nume; }
+    
+    float getValoare() {
+        return this->valoare; }
+    
+    int getAnAcordare() {
+        return this->anAcordare; }
+        
+    void setFilmCastigator(Film f){
+        this->filmCastigator = f; }
+    
+    void setNume(string nume) {
+        if (nume.length() > 0)
+            this->nume = nume;
+    }
+    
+    void setValoare(float val) {
+        if (val > 0)
+            this->valoare = val;
+    }
+    
+    void setAnAcordare(int an) {
+        if (an > 1800 && an < 2024)
+            this->anAcordare = an;
+    }
+    
+    Premiu() {
+        this->nume = "Premiul Oscar";
+        this->valoare = 5000;
+        this->anAcordare = 2023;
+        Film f;
+        this->filmCastigator = f;
+    }
+    
+    Premiu(Film f, string nume, float valoare, int an) {
+        this->filmCastigator = f;
+        this->nume = nume;
+        this->valoare = valoare;
+        this->anAcordare = an;
+    }
+    
+    Premiu(const Premiu& p) {
+        this->nume = p.nume;
+        this->valoare = p.valoare;
+        this->anAcordare = p.anAcordare;
+        this->filmCastigator = p.filmCastigator;
+    }
+    
+    friend ostream& operator<<(ostream& consola, const Premiu& p) {
+        consola << "Nume premiu = " << p.nume << endl;
+        consola << "Valoare = " << p.valoare << " lei" << endl;
+        consola << "An acordare = " << p.anAcordare << endl;
+        consola << "Filmul castigator: " << endl << p.filmCastigator;
+        consola << endl;
+        
+        return consola;
+    }
+    
+    Premiu& operator=(const Premiu& p) {
+        if (this != &p) {
+            this->nume = p.nume;
+            this->valoare = p.valoare;
+            this->anAcordare = p.anAcordare;
+            this->filmCastigator = p.filmCastigator;
+        }
+        return *this;
+    }
+    
+    Premiu operator++(int) {
+         Premiu temporar = *this;
+         this->valoare += 1000;
+         return temporar;
+    }
+    
+    Premiu operator--(int) {
+         Premiu temporar = *this;
+         this->valoare -= 1000;
+         return temporar;
+    }
+};
+
+
 int main()
 {
     Film film1;
@@ -605,18 +699,20 @@ int main()
     cout << "Filmul 2:" << endl;
     cout << film2;
     
+    /*
     film2 = film1;
     cout << "Testare operator = " << endl << "Noul film 2:" << endl;
     cout << film2;
+    */
     
     film2--;
     cout << "Testare operator -- " << endl << "Noul film 2 (cu rating scazut): " << endl;
     cout << film2;
     
-    /*
+    
     Film film3("The Conjuring", 2013, 112, 7.5);
     film3.afisare();
-    */
+    
     
     
     Sala sala1;
@@ -721,7 +817,7 @@ int main()
     cout << "Impozitul pe salariu: " << angajat1.getImpozitSalariu() << "%" << endl;
     cout << endl;
     
-    
+    /*
     cout << "************* Faza 4 ***************" << endl << endl;
     
     cout << "Introduceti datele pentru vectorul de filme:" << endl;
@@ -783,6 +879,48 @@ int main()
             cout << mFilme[i][j] << endl;
         }
     }
+    */
     
+    cout << "************* Faza 5 ***************" << endl << endl;
+    
+    cout << "Testare constructor fara parametrii: " << endl;
+    Premiu premiu1;
+    cout << "Premiul 1: " << endl << premiu1;
+    
+    cout << "Testare constructor cu parametrii: " << endl;
+    Premiu premiu2(film2, "Premiul Nobel", 10000, 2000);
+    cout << "Premiul 2: " << endl << premiu2;
+    
+    cout << "Testare constructor de copiere: " << endl;
+    Premiu premiu3 = premiu2;
+    cout << "Premiul 3: " << endl << premiu3;
+    
+    cout << "Testare getteri: " << endl;
+    cout << "Premiul 3: " << endl;
+    cout << "Nume = " << premiu3.getNume() << endl;
+    cout << "Valoare = " << premiu3.getValoare() << " lei" << endl;
+    cout << "An acordare = " << premiu3.getAnAcordare() << endl;
+    cout << "Filmul castigator: " << endl << premiu3.getFilmCastigator() << endl;
+    
+    cout << "Testare setteri: " << endl;
+    premiu3.setNume("Premiul Antonia");
+    premiu3.setValoare(7000);
+    premiu3.setAnAcordare(2003);
+    premiu3.setFilmCastigator(film3);
+    cout << "Premiul 3: " << endl << premiu3;
+    
+    cout << "Testare operator = " << endl;
+    Premiu premiu4;
+    premiu4 = premiu3;
+    cout << "Premiul 4: " << endl << premiu4;
+    
+    cout << "Testare operator ++ " << endl;
+    cout << "Valorea premiul 4: " << premiu4.getValoare() << " lei" << endl;
+    premiu4++;
+    cout << "Valoarea premiului 4 dupa crestere: " << premiu4.getValoare() << " lei" << endl;
+    premiu4--;
+    premiu4--;
+    cout << "Valoarea premiului 4 dupa scadere de 2 ori: " << premiu4.getValoare() << " lei" << endl;
 }
+
 
