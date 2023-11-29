@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cstring>
 
 using namespace std;
@@ -146,14 +147,33 @@ public:
     }
     
     friend ostream& operator<<(ostream& consola, const Film& film) {
-        cout << "Nume = " << film.nume << endl;
-        cout << "Gen = " << film.gen << endl;
-        cout << "Anul aparitiei = " << film.anAparitie << endl;
-        cout << "Durata = " << film.durata << " minute" << endl;
-        cout << "Rating = " << film.rating << " / 10" << endl;
-        cout << "Pret = " << film.pret << " lei" << endl;
-        cout << "Reducere pentru elevi = " << film.reducereElevi << "%" << endl;
-        cout << endl;
+        consola << "Nume = " << film.nume << endl;
+        consola << "Gen = " << film.gen << endl;
+        consola << "Anul aparitiei = " << film.anAparitie << endl;
+        consola << "Durata = " << film.durata << " minute" << endl;
+        consola << "Rating = " << film.rating << " / 10" << endl;
+        consola << "Pret = " << film.pret << " lei" << endl;
+        consola << "Reducere pentru elevi = " << film.reducereElevi << "%" << endl;
+        consola << endl;
+        return consola;
+    }
+    
+    friend ofstream& operator<<(ofstream& consola, const Film& film) {
+        consola << film.nume << endl;
+        consola << film.gen << endl;
+        consola << film.anAparitie << endl;
+        consola << film.durata << endl;
+        consola << film.rating << endl;
+        consola << film.pret << endl;
+        consola << film.reducereElevi << endl;
+        
+        return consola;
+    }
+    
+    friend fstream& operator<<(fstream& consola, const Film& film) {
+        consola << film.durata << endl;
+        //scriereB.write((char*)&var, sizeof(int));
+        
         return consola;
     }
     
@@ -171,6 +191,28 @@ public:
         cout << "Durata = "; in >> film.durata;
         cout << "Rating = "; in >> film.rating;
         cout << "Pret = "; in >> film.pret;
+        return in;
+    }
+    
+    friend ifstream& operator>>(ifstream& in, Film& film) {
+        in >> film.nume;
+        
+        char temporar[30];
+        in >> temporar;
+        if (film.gen != NULL) {
+            delete[]film.gen;
+        }
+        film.gen = new char[strlen(temporar) + 1];
+        strcpy(film.gen, temporar);
+        
+        int x;
+        in >> x;
+        
+        in >> film.durata;
+        in >> film.rating;
+        in >> film.pret;
+        in >> film.reducereElevi;
+        
         return in;
     }
     
@@ -498,13 +540,24 @@ public:
     }
     
     friend ostream& operator<<(ostream& consola, const Angajat& ang) {
-        cout << "Nume = " << ang.nume << endl;
-        cout << "Pozitie = " << ang.pozitie << endl;
-        cout << "Varsta = " << ang.varsta << " ani" << endl;
-        cout << "Salariu = " << ang.salariu << " lei" << endl;
-        cout << "Impozit pe salariu = " << ang.impozitSalariu << "%" << endl;
-        cout << "Anul angajarii = " << ang.anAngajare << endl;
-        cout << endl;
+        consola << "Nume = " << ang.nume << endl;
+        consola << "Pozitie = " << ang.pozitie << endl;
+        consola << "Varsta = " << ang.varsta << " ani" << endl;
+        consola << "Salariu = " << ang.salariu << " lei" << endl;
+        consola << "Impozit pe salariu = " << ang.impozitSalariu << "%" << endl;
+        consola << "Anul angajarii = " << ang.anAngajare << endl;
+        consola << endl;
+        return consola;
+    }
+    
+    friend ofstream& operator<<(ofstream& consola, const Angajat& ang) {
+        consola << ang.nume << endl;
+        consola << ang.pozitie << endl;
+        consola << ang.varsta << endl;
+        consola << ang.salariu << endl;
+        consola << ang.impozitSalariu << endl;
+        consola << ang.anAngajare << endl;
+        
         return consola;
     }
     
@@ -521,6 +574,27 @@ public:
         
         cout << "Varsta = "; in >> ang.varsta;
         cout << "Salariu = "; in >> ang.salariu;
+        return in;
+    }
+    
+    friend ifstream& operator>>(ifstream& in, Angajat& ang) {
+        in >> ang.nume;
+        
+        char temporar[30];
+        in >> temporar;
+        if (ang.pozitie != NULL) {
+            delete[]ang.pozitie;
+        }
+        ang.pozitie = new char[strlen(temporar) + 1];
+        strcpy(ang.pozitie, temporar);
+        
+        in >> ang.varsta;
+        in >> ang.salariu;
+        
+        int x;
+        in >> x;
+        in >> x;
+        
         return in;
     }
     
@@ -797,10 +871,10 @@ int main()
     comparareSalariu(angajat2, angajat1);
     cout << endl;
     
-    /*
+    
     Angajat angajat3("Stancu Corneliu", 45, 2023);
     angajat3.afisare();
-    */
+    
     
     film1.eliminaReducere();
     cout << "Reducerea pentru elevi a fost eliminata: " << endl;
@@ -881,8 +955,10 @@ int main()
     }
     */
     
-    cout << "************* Faza 5 ***************" << endl << endl;
     
+    //cout << "************* Faza 5 ***************" << endl << endl;
+    
+    /*
     cout << "Testare constructor fara parametrii: " << endl;
     Premiu premiu1;
     cout << "Premiul 1: " << endl << premiu1;
@@ -921,6 +997,25 @@ int main()
     premiu4--;
     premiu4--;
     cout << "Valoarea premiului 4 dupa scadere de 2 ori: " << premiu4.getValoare() << " lei" << endl;
+    */
+    
+    cout << "****************** Faza 6 ********************" << endl << endl;
+
+    ofstream scriereT("fisierText.out", ios::out);
+    scriereT << film3;
+    scriereT << angajat3;
+    cout << "Obiectele au fost scrise in fisier" << endl << endl;
+    
+    scriereT.close();
+    
+    ifstream citireT("fisierText.in", ios::in);
+    Film film4;
+    citireT >> film4;
+    cout << "Filmul 4 citit din fisier: " << endl << film4;
+    
+    Angajat angajat4;
+    citireT >> angajat4;
+    cout << "Angajatul 4 citit din fisier: " << endl <<angajat4;
+    
+    citireT.close();
 }
-
-
