@@ -154,7 +154,7 @@ public:
         consola << "Rating = " << film.rating << " / 10" << endl;
         consola << "Pret = " << film.pret << " lei" << endl;
         consola << "Reducere pentru elevi = " << film.reducereElevi << "%" << endl;
-        consola << endl;
+
         return consola;
     }
     
@@ -242,6 +242,90 @@ void calculPretBiletElev(Film film) {
     p = film.pret * (film.reducereElevi / 100);
     cout << "Pentrul filmul '" << film.nume << "' pretul unui bilet pentru elevi este de " << p << " lei" << endl << endl;
 }
+
+class FilmInPremiera : public Film {
+private:
+    char* dataPremiera;
+    int taxaSuplimentara;
+    
+public: 
+    char* getDataPremiera() {
+        return this->dataPremiera;
+    }
+    
+    int getTaxaSuplimentara() {
+        return this->taxaSuplimentara;
+    }
+    
+    void setDataPremiera(char* data) {
+        if (strlen(data) > 0 ) {
+            if (this->dataPremiera != NULL)
+                delete[]this->dataPremiera;
+        }
+        this->dataPremiera = new char[strlen(data) + 1];
+        strcpy(this->dataPremiera, data);
+    }
+    
+    void setTaxaSuplimentara(int taxa) {
+        if (taxa > 0)
+            this->taxaSuplimentara = taxa;
+    }
+    
+    FilmInPremiera() : Film() {
+        this->dataPremiera = new char[strlen("14/02/2024") + 1];
+        strcpy(this->dataPremiera, "14/02/2024");
+        this->taxaSuplimentara = 50;
+    }
+    
+    FilmInPremiera(char* data, int taxa) : Film() {
+        this->dataPremiera = new char[strlen(data) + 1];
+        strcpy(this->dataPremiera, data);
+        
+        this->taxaSuplimentara = taxa;
+    }
+    
+    FilmInPremiera(string nume, char* gen, int an, int durata, float rating, float pret, char* data, int taxa) : Film(nume, gen, an, durata, rating, pret) {
+        this->dataPremiera = new char[strlen(data) + 1];
+        strcpy(this->dataPremiera, data);
+        
+        this->taxaSuplimentara = taxa;
+    }
+    
+    FilmInPremiera(const FilmInPremiera& fp) : Film(fp) {
+        this->dataPremiera = new char[strlen(fp.dataPremiera) + 1];
+        strcpy(this->dataPremiera, fp.dataPremiera);
+        
+        this->taxaSuplimentara = fp.taxaSuplimentara;
+    }
+    
+    friend ostream& operator<<(ostream& out, const FilmInPremiera& fp) {
+        out << (Film)fp;
+        out << "Data premierei = " << fp.dataPremiera << endl;
+        out << "Taxa suplimentara = " << fp.taxaSuplimentara << " lei" << endl;
+        out << endl;
+
+        return out;
+    }
+    
+    FilmInPremiera& operator=(const FilmInPremiera& fp) {
+        if (this != &fp) {
+            Film::operator=(fp);
+            
+            if (this->dataPremiera != NULL)
+                delete[]this->dataPremiera;
+            this->dataPremiera = new char[strlen(fp.dataPremiera) + 1];
+            strcpy(this->dataPremiera, fp.dataPremiera);
+            
+            this->taxaSuplimentara = fp.taxaSuplimentara;
+        }
+    }
+    
+    ~FilmInPremiera() {
+        if (this->dataPremiera != NULL)
+            delete[]this->dataPremiera;
+    }
+};
+
 
 class Sala{
 private:
@@ -546,7 +630,6 @@ public:
         consola << "Salariu = " << ang.salariu << " lei" << endl;
         consola << "Impozit pe salariu = " << ang.impozitSalariu << "%" << endl;
         consola << "Anul angajarii = " << ang.anAngajare << endl;
-        consola << endl;
         return consola;
     }
     
@@ -737,6 +820,90 @@ public:
          return temporar;
     }
 };
+    
+class AngajatulAnului : public Angajat {
+private:
+    int bonusCastigat;
+    int luna;
+    int an;
+    
+public:
+    int getBonusCastigat() {
+        return this->bonusCastigat;
+    }
+    
+    int getLuna() {
+        return this->luna;
+    }
+    
+    int getAn() {
+        return this->an;
+    }
+    
+    void setBonusCastigat(int bonus) {
+        if (bonus > 0)
+            this->bonusCastigat = bonus;
+    }
+    
+    void setLuna(int luna) {
+        if (luna >= 1 && luna <= 12)
+            this->luna = luna;
+    }
+    
+    void setAn(int an) {
+        if (an >= 2000 && an <= 2024)
+            this->an = an;
+    }
+    
+    AngajatulAnului() : Angajat() {
+        this->bonusCastigat = 100;
+        this->luna = 1;
+        this->an = 2024;
+    }  
+    
+    AngajatulAnului(int bonus, int luna, int an) : Angajat() {
+        this->bonusCastigat = bonus;
+        this->luna = luna;
+        this->an = an;
+    }
+    
+    AngajatulAnului(const AngajatulAnului& aa) : Angajat(aa) {
+        this->bonusCastigat = aa.bonusCastigat;
+        this->luna = aa.luna;
+        this->an = aa.an;
+    }
+	
+	AngajatulAnului(string nume, char* pozitie, int varsta, float salariu, int anAngajare, int bonus, int luna, int anCastig) : Angajat(nume, pozitie, varsta, salariu, anAngajare) {
+	    this->bonusCastigat = bonus;
+	    this->luna = luna;
+	    this->an = anCastig;
+	}
+    
+    friend ostream& operator<<(ostream& out, const AngajatulAnului& aa) {
+        out << (Angajat)aa;
+        out << "Bonus castigat = " << aa.bonusCastigat << " lei" << endl;
+        out << "Luna si anul in care a castigat = " << aa.luna << "/" << aa.an << endl;
+        cout << endl;
+
+        return out;
+    }
+    
+    AngajatulAnului& operator=(const AngajatulAnului& aa) {
+        if (this != &aa) {
+            Angajat::operator=(aa);
+            this->bonusCastigat = aa.bonusCastigat;
+            this->an = aa.an;
+            this->luna = aa.luna;
+        }
+        return *this;
+        
+        //(ZOO)*this = (ZOO)s;
+    }
+    
+    ~AngajatulAnului() {
+    }
+    
+};
 
 
 int main()
@@ -771,7 +938,7 @@ int main()
     strcpy(gen,"Science Fiction");
     Film film2("Matrix", gen, 1999, 136, 8.7, 25);
     cout << "Filmul 2:" << endl;
-    cout << film2;
+    cout << film2 << endl;
     
     /*
     film2 = film1;
@@ -781,7 +948,7 @@ int main()
     
     film2--;
     cout << "Testare operator -- " << endl << "Noul film 2 (cu rating scazut): " << endl;
-    cout << film2;
+    cout << film2 << endl;
     
     
     Film film3("The Conjuring", 2013, 112, 7.5);
@@ -838,7 +1005,7 @@ int main()
     
     Angajat angajat1;
     cout << "Angajatul 1: " << endl;
-    cout << angajat1;
+    cout << angajat1 << endl;
     
     /*
     angajat1.setNume("Popescu Ion TEST");
@@ -861,11 +1028,11 @@ int main()
     strcpy(pozitie,"Manager");
     Angajat angajat2("Stoica Lavinia", pozitie, 36, 4500, 2018);
     cout << "Angajatul 2: " << endl;
-    cout << angajat2;
+    cout << angajat2 << endl;
     
     angajat2 = angajat2 + 1000;
     cout << "Testare operator +" << endl << "Noul angajat 2 (cu salariu marit): " << endl;
-    cout << angajat2;
+    cout << angajat2 << endl;
     
     cout << "Comparare de salarii: " << endl;
     comparareSalariu(angajat2, angajat1);
@@ -998,7 +1165,7 @@ int main()
     premiu4--;
     cout << "Valoarea premiului 4 dupa scadere de 2 ori: " << premiu4.getValoare() << " lei" << endl;
     */
-    
+    /*
     cout << "****************** Faza 6 ********************" << endl << endl;
 
     ofstream scriereT("fisierText.out", ios::out);
@@ -1007,6 +1174,7 @@ int main()
     cout << "Obiectele au fost scrise in fisier" << endl << endl;
     
     scriereT.close();
+    
     
     ifstream citireT("fisierText.in", ios::in);
     Film film4;
@@ -1018,4 +1186,82 @@ int main()
     cout << "Angajatul 4 citit din fisier: " << endl <<angajat4;
     
     citireT.close();
+    */
+    
+    cout << "****************** Faza 7 ********************" << endl << endl;
+    
+    cout << "Testare getteri si setteri:" << endl;
+    AngajatulAnului aa1;
+    cout << "Angajatul anului nr. 1: " << endl;
+    cout << "Bonus castigat = " << aa1.getBonusCastigat() << " lei" << endl;
+    cout << "Luna si anul in care a castigat = " << aa1.getLuna() << "/" << aa1.getAn() << endl;
+    cout << endl;
+    
+    aa1.setBonusCastigat(200);
+    aa1.setLuna(12);
+    aa1.setAn(2023);
+
+    cout << "Noul angajatul anului nr. 1: " << endl;
+    cout << "Bonus castigat = " << aa1.getBonusCastigat() << " lei" << endl;
+    cout << "Luna si anul in care a castigat = " << aa1.getLuna() << "/" << aa1.getAn() << endl;
+    cout << endl;
+    
+    //cout << "Testare constructor de copiere: " << endl;
+    //cout << "Angajatul anului nr. 2: " << endl;
+   // AngajatulAnului aa2 = aa1;
+    //cout << aa2;
+    
+    char* poz = new char[strlen("Manager") + 1];
+    strcpy(poz,"Manager");
+    AngajatulAnului aa2("Stoica Lavinia", pozitie, 36, 4500, 2018, 1000, 11, 2023);
+    cout <<"Angajatul anului nr. 2: " << endl << aa2 << endl;
+    
+    cout << "Testare operator = " << endl;
+    cout << "Angajatul anului nr. 3: " << endl;
+    AngajatulAnului aa3;
+    aa3 = aa2;
+    cout << aa3 << endl;
+    
+    
+    
+    cout << "Testare getteri si setteri: " << endl;
+    
+    FilmInPremiera fp1;
+    cout << "Premiera 1: " << endl;
+    cout << "Data premierei = " << fp1.getDataPremiera() << endl;
+    cout << "Taxa suplimentara = " << fp1.getTaxaSuplimentara() << " lei" << endl;
+    cout << endl;
+    
+    char* data = new char[strlen("29/02/2024") + 1];
+    strcpy(data, "29/02/2024");
+    
+    fp1.setDataPremiera(data);
+    fp1.setTaxaSuplimentara(100);
+    
+    cout << "Noua premiera 1: " << endl;
+    cout << "Data premierei = " << fp1.getDataPremiera() << endl;
+    cout << "Taxa suplimentara = " << fp1.getTaxaSuplimentara() << " lei" << endl;
+    cout << endl;
+    
+    //FilmInPremiera fp2(data, 100);
+    //cout << "Premiera 2: " << endl;
+    //cout << fp2 << endl;
+    
+    
+    char* genP = new char[strlen("Science Fiction") + 1];
+    strcpy(genP,"Science Fiction");
+    FilmInPremiera fp2("Matrix", genP, 1999, 136, 8.7, 25, data, 200);
+    cout << "Premiera 2: " << endl;
+    cout << fp2;
+    
+    
+    //FilmInPremiera fp3 = fp2;
+    //cout << "Premiera 3:" << endl;
+    //cout << fp3;
+    
+    //FilmInPremiera fp3;
+    //fp3 = fp1;
+    //cout << "Premiera 3:" << endl;
+    //cout << fp3;
+     
 }
