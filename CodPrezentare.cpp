@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#define _CRT_SECURE_NO_WARNINGS
 
 using namespace std;
 
