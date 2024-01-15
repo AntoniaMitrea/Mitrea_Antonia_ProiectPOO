@@ -318,6 +318,8 @@ public:
             
             this->taxaSuplimentara = fp.taxaSuplimentara;
         }
+        
+        return *this;
     }
     
     ~FilmInPremiera() {
@@ -327,7 +329,21 @@ public:
 };
 
 
-class Sala{
+class Camera {
+protected:
+    int nrPereti;
+    int nrUsi;
+    
+public:
+    virtual void afiseazaNrLocuri() = 0;
+    
+    Camera(){
+        this->nrPereti = 4;
+        this->nrUsi = 1;
+    }
+};
+
+class Sala : public Camera {
 private:
     int nrSala;
     int nrLocuri;
@@ -496,11 +512,33 @@ public:
     static void injumatatesteProgram() {
         maximOreFunctionare = maximOreFunctionare / 2;
     }
+    
+    virtual void afiseazaNrLocuri() {
+        cout << "Sala " << this->nrSala << " are " << this->nrLocuri << " locuri." << endl;
+    }
 };
 float Sala::maximOreFunctionare = 15;
 
-class Angajat{
-private:
+class Persoana {
+protected:
+    char sex;
+    string loculNasterii;
+    
+public:
+    virtual float calculeazaSalariu() = 0;
+    
+    Persoana() {
+        this->sex = 'M';
+        this->loculNasterii = "Bucuresti";
+    }
+    
+    virtual ~Persoana() {
+    }
+
+};
+
+class Angajat : public Persoana {
+protected:
     string nume;
     char* pozitie;
     int varsta;
@@ -592,6 +630,14 @@ public:
         this->varsta = varsta;
         this->salariu = 2000;
     }
+    
+    Angajat(string nume, float salariu) : anAngajare(2022) {
+        this->nume = nume;
+        this->pozitie = new char[strlen("Operator") + 1];
+        strcpy(this->pozitie, "Operator");
+        this->varsta = 30;
+        this->salariu = salariu;
+    } 
     
     Angajat(const Angajat &angajat) : anAngajare(angajat.anAngajare) {
         this->nume = angajat.nume;
@@ -710,6 +756,11 @@ public:
     }
     
     friend void comparareSalariu (Angajat ang1, Angajat ang2);
+    
+    
+    virtual float calculeazaSalariu() {
+        return this->salariu - this->salariu * this->impozitSalariu / 100;
+    }
 };
 float Angajat::impozitSalariu = 42;
 
@@ -821,8 +872,8 @@ public:
     }
 };
     
-class AngajatulAnului : public Angajat {
-private:
+class AngajatulLunii : public Angajat {
+protected:
     int bonusCastigat;
     int luna;
     int an;
@@ -855,52 +906,61 @@ public:
             this->an = an;
     }
     
-    AngajatulAnului() : Angajat() {
+    AngajatulLunii() : Angajat() {
         this->bonusCastigat = 100;
         this->luna = 1;
         this->an = 2024;
     }  
     
-    AngajatulAnului(int bonus, int luna, int an) : Angajat() {
+    AngajatulLunii(int bonus, int luna, int an) : Angajat() {
         this->bonusCastigat = bonus;
         this->luna = luna;
         this->an = an;
     }
     
-    AngajatulAnului(const AngajatulAnului& aa) : Angajat(aa) {
-        this->bonusCastigat = aa.bonusCastigat;
-        this->luna = aa.luna;
-        this->an = aa.an;
+    AngajatulLunii(const AngajatulLunii& al) : Angajat(al) {
+        this->bonusCastigat = al.bonusCastigat;
+        this->luna = al.luna;
+        this->an = al.an;
     }
 	
-	AngajatulAnului(string nume, char* pozitie, int varsta, float salariu, int anAngajare, int bonus, int luna, int anCastig) : Angajat(nume, pozitie, varsta, salariu, anAngajare) {
+	AngajatulLunii(string nume, char* pozitie, int varsta, float salariu, int anAngajare, int bonus, int luna, int anCastig) : Angajat(nume, pozitie, varsta, salariu, anAngajare) {
 	    this->bonusCastigat = bonus;
 	    this->luna = luna;
 	    this->an = anCastig;
 	}
+	
+	AngajatulLunii(string nume, float salariu, int bonus) : Angajat(nume, salariu) {
+	    this->bonusCastigat = bonus;
+	    this->luna = 1;
+	    this->an = 2024;
+	}
     
-    friend ostream& operator<<(ostream& out, const AngajatulAnului& aa) {
-        out << (Angajat)aa;
-        out << "Bonus castigat = " << aa.bonusCastigat << " lei" << endl;
-        out << "Luna si anul in care a castigat = " << aa.luna << "/" << aa.an << endl;
+    friend ostream& operator<<(ostream& out, const AngajatulLunii& al) {
+        out << (Angajat)al;
+        out << "Bonus castigat = " << al.bonusCastigat << " lei" << endl;
+        out << "Luna si anul in care a castigat = " << al.luna << "/" << al.an << endl;
         cout << endl;
 
         return out;
     }
     
-    AngajatulAnului& operator=(const AngajatulAnului& aa) {
-        if (this != &aa) {
-            Angajat::operator=(aa);
-            this->bonusCastigat = aa.bonusCastigat;
-            this->an = aa.an;
-            this->luna = aa.luna;
+    AngajatulLunii& operator=(const AngajatulLunii& al) {
+        if (this != &al) {
+            Angajat::operator=(al);
+            this->bonusCastigat = al.bonusCastigat;
+            this->an = al.an;
+            this->luna = al.luna;
         }
         return *this;
         
-        //(ZOO)*this = (ZOO)s;
     }
     
-    ~AngajatulAnului() {
+    ~AngajatulLunii() {
+    }
+    
+    virtual float calculeazaSalariu() {
+        return this->salariu - this->salariu * this->impozitSalariu / 100 + this->bonusCastigat;
     }
     
 };
@@ -1042,7 +1102,7 @@ int main()
     Angajat angajat3("Stancu Corneliu", 45, 2023);
     angajat3.afisare();
     
-    
+    /*
     film1.eliminaReducere();
     cout << "Reducerea pentru elevi a fost eliminata: " << endl;
     cout << "Reducere pentru elevi: " << film1.getReducereElevi() << "%" << endl;
@@ -1057,6 +1117,7 @@ int main()
     cout << "Impozitul pe salariu a fost dublat: " << endl;
     cout << "Impozitul pe salariu: " << angajat1.getImpozitSalariu() << "%" << endl;
     cout << endl;
+    */
     
     /*
     cout << "************* Faza 4 ***************" << endl << endl;
@@ -1188,39 +1249,43 @@ int main()
     citireT.close();
     */
     
+    
+    /*
     cout << "****************** Faza 7 ********************" << endl << endl;
     
     cout << "Testare getteri si setteri:" << endl;
-    AngajatulAnului aa1;
-    cout << "Angajatul anului nr. 1: " << endl;
-    cout << "Bonus castigat = " << aa1.getBonusCastigat() << " lei" << endl;
-    cout << "Luna si anul in care a castigat = " << aa1.getLuna() << "/" << aa1.getAn() << endl;
+    AngajatulLunii al1;
+    cout << "Angajatul lunii nr. 1: " << endl;
+    cout << "Bonus castigat = " << al1.getBonusCastigat() << " lei" << endl;
+    cout << "Luna si anul in care a castigat = " << al1.getLuna() << "/" << al1.getAn() << endl;
     cout << endl;
     
-    aa1.setBonusCastigat(200);
-    aa1.setLuna(12);
-    aa1.setAn(2023);
+    al1.setBonusCastigat(200);
+    al1.setLuna(12);
+    al1.setAn(2023);
 
-    cout << "Noul angajatul anului nr. 1: " << endl;
-    cout << "Bonus castigat = " << aa1.getBonusCastigat() << " lei" << endl;
-    cout << "Luna si anul in care a castigat = " << aa1.getLuna() << "/" << aa1.getAn() << endl;
+    cout << "Noul angajatul lunii nr. 1: " << endl;
+    cout << "Bonus castigat = " << al1.getBonusCastigat() << " lei" << endl;
+    cout << "Luna si anul in care a castigat = " << al1.getLuna() << "/" << al1.getAn() << endl;
     cout << endl;
+    
     
     //cout << "Testare constructor de copiere: " << endl;
-    //cout << "Angajatul anului nr. 2: " << endl;
-   // AngajatulAnului aa2 = aa1;
-    //cout << aa2;
+    //cout << "Angajatul lunii nr. 2: " << endl;
+    //AngajatulLunii al2 = al1;
+    //cout << al2;
+    
     
     char* poz = new char[strlen("Manager") + 1];
     strcpy(poz,"Manager");
-    AngajatulAnului aa2("Stoica Lavinia", pozitie, 36, 4500, 2018, 1000, 11, 2023);
-    cout <<"Angajatul anului nr. 2: " << endl << aa2 << endl;
+    AngajatulLunii al2("Stoica Lavinia", pozitie, 36, 4500, 2018, 1000, 11, 2023);
+    cout <<"Angajatul lunii nr. 2: " << endl << al2 << endl;
     
     cout << "Testare operator = " << endl;
-    cout << "Angajatul anului nr. 3: " << endl;
-    AngajatulAnului aa3;
-    aa3 = aa2;
-    cout << aa3 << endl;
+    cout << "Angajatul lunii nr. 3: " << endl;
+    AngajatulLunii al3;
+    al3 = al2;
+    cout << al3 << endl;
     
     
     
@@ -1243,6 +1308,7 @@ int main()
     cout << "Taxa suplimentara = " << fp1.getTaxaSuplimentara() << " lei" << endl;
     cout << endl;
     
+    
     //FilmInPremiera fp2(data, 100);
     //cout << "Premiera 2: " << endl;
     //cout << fp2 << endl;
@@ -1263,5 +1329,48 @@ int main()
     //fp3 = fp1;
     //cout << "Premiera 3:" << endl;
     //cout << fp3;
-     
+    */
+    
+    
+    
+    cout << "****************** Faza 8 ********************" << endl << endl;
+    
+    cout << "Testare functie virtuala pura pentru Angajat:" << endl;
+    
+    cout << "Angajat 1:" << endl;
+    cout << "Salariu brut = " << angajat1.getSalariu() << " lei" << endl;
+    cout << "Salariu net calculat = " << angajat1.calculeazaSalariu() << " lei " << endl;
+    cout << endl;
+    
+    AngajatulLunii al1;
+    cout << "Angajatul lunii nr. 1: " << endl;
+    cout << "Salariu brut = " << al1.getSalariu() << " lei" << endl;
+    cout << "Bonus = " << al1.getBonusCastigat() << " lei" << endl;
+    cout << "Salariu net calculat = " << al1.calculeazaSalariu() << " lei" << endl;
+    cout << endl;
+    
+    
+    cout << "Testare functie virtuala pura pentru Sala:" << endl;
+    sala1.afiseazaNrLocuri();
+    sala2.afiseazaNrLocuri();
+    cout << endl;
+    
+    
+    cout << "Conceptul de late binding: " << endl << endl;
+    
+    Persoana** vector;
+    vector = new Persoana* [10];
+    vector[0] = new Angajat("Maria", 5000);
+    vector[1] = new AngajatulLunii("Catalin", 6000, 100);
+    vector[2] = new AngajatulLunii("Marius", 7000, 200);
+    vector[3] = new Angajat("Darius", 6000);
+    vector[4] = new Angajat("Laurentiu", 8000);
+    vector[5] = new AngajatulLunii("Alexandra", 7000, 300);
+    vector[6] = new Angajat("Matei", 4000);
+    vector[7] = new AngajatulLunii("Cristian", 5000, 500);
+    vector[8] = new AngajatulLunii("Ioana", 6500, 100);
+    vector[9] = new Angajat("Antonia", 10000);
+    
+    for (int i = 0; i < 10; i++) 
+        cout << i << ". Salariu net calculat = " << vector[i]->calculeazaSalariu() << " lei" << endl;
 }
